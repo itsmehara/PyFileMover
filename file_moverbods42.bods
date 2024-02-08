@@ -1,0 +1,33 @@
+$sourceFolder = 'C:\path\to\source'
+$destFolder = 'C:\path\to\destination'
+
+Print('Source folder: ' || $sourceFolder)
+Print('Destination folder: ' || $destFolder)
+
+$supportedExtensions = ['txt', 'csv']
+
+' Iterate over files in the source folder
+' You would need to replace this part with your actual BODS dataflow
+' that reads files from the source folder
+foreach $file in $sourceFiles
+    ' Extract file name and extension
+    $fileName = Substring($file, LastIndexOf($file, '\\') + 1)
+    $fileExt = Substring($fileName, LastIndexOf($fileName, '.') + 1)
+
+    ' Check if the file extension is supported
+    if InList($fileExt, $supportedExtensions) then
+        ' Perform file copy operation
+        ' You would need to replace this part with the actual BODS function or operation
+        ' to copy or move the file to the destination folder
+        ' For example, you might use a dataflow to write the file to the destination folder
+        ' or use a shell command via Execute() function
+        ' Example: Execute('cmd /c copy "' || $file || '" "' || $destFolder || '"')
+
+        ' Log moved file details
+        $logEntry = FormatDate(CurrentDate(), 'YYYY-MM-DD HH:MI:SS') || '|' || $destFolder || '|' || $sourceFolder || '|' || $fileName
+        Print('Log entry: ' || $logEntry)
+        FileWrite_Line('C:\path\to\file_movement_log.txt', $logEntry)
+    endif
+endforeach
+
+Print('Files moved successfully.')
