@@ -1,0 +1,37 @@
+$sourceFolder = 'C:\path\to\source'
+$destFolder = 'C:\path\to\destination'
+
+Print('Source folder: ' || $sourceFolder)
+Print('Destination folder: ' || $destFolder)
+
+$supportedExtensions = Array('txt', 'csv')
+
+if !FileExists($sourceFolder) then
+    Print('Source folder does not exist.')
+    exit(1)
+endif
+if !FileExists($destFolder) then
+    Print('Destination folder does not exist.')
+    exit(1)
+endif
+
+$currentDateTime = Substring(CurrentDate(), 1, 4) + '-' + Substring(CurrentDate(), 5, 2) + '-' + Substring(CurrentDate(), 7, 2) + '_' + Substring(CurrentTime(), 1, 2) + '-' + Substring(CurrentTime(), 4, 2) + '-' + Substring(CurrentTime(), 7, 2)
+
+Print('Current date and time: ' || $currentDateTime)
+
+$destSubfolder = $destFolder || '\\' || $currentDateTime
+FileMkDir($destSubfolder)
+
+Print('Destination subfolder: ' || $destSubfolder)
+
+$files = FileList($sourceFolder, '*.*')
+foreach $file in $files
+    $fileExt = Right($file, 3)
+    if InList($fileExt, $supportedExtensions) then
+        FileMove($file, $destSubfolder || '\\' || GetFileName($file))
+        $logEntry = $currentDateTime || '|' || $destSubfolder || '|' || $sourceFolder || '|' || GetFileName($file)
+        FileWrite('C:\path\to\file_movement_log.txt', $logEntry, 'Append')
+    endif
+endforeach
+
+Print('Files moved successfully.')
