@@ -1,5 +1,6 @@
 import os
 import shutil
+from datetime import datetime
 
 
 def move_files(source_folder, dest_folder):
@@ -14,6 +15,11 @@ def move_files(source_folder, dest_folder):
         print("Destination folder does not exist.")
         return
 
+    # Create directory with current date and time in destination folder
+    current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    dest_subfolder = os.path.join(dest_folder, current_datetime)
+    os.makedirs(dest_subfolder)
+
     # Create file movement log file if not exists
     log_file = 'file_movement_log.txt'
     if not os.path.exists(log_file):
@@ -25,16 +31,17 @@ def move_files(source_folder, dest_folder):
     for filename in os.listdir(source_folder):
         # Check if file has supported extension
         if any(filename.endswith(ext) for ext in supported_extensions):
-            # Move the file to destination folder
+            # Move the file to destination subfolder
             src_file = os.path.join(source_folder, filename)
-            dest_file = os.path.join(dest_folder, filename)
+            dest_file = os.path.join(dest_subfolder, filename)
             shutil.move(src_file, dest_file)
             moved_files.append(filename)
 
-    # Log moved file names to file_movement_log.txt
+    # Log moved file details to file_movement_log.txt
     with open(log_file, 'a') as f:
         for file_name in moved_files:
-            f.write(file_name + '\n')
+            log_entry = f"{datetime.now()}|{dest_subfolder}|{source_folder}|{file_name}\n"
+            f.write(log_entry)
 
     print("Files moved successfully.")
 
